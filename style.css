@@ -4,11 +4,11 @@
     box-sizing: border-box;
 }
 body{
-    margin: 20px auto;
-    background-color: white;
+    margin: 20px;
 }
 #app{
     width: 70%;
+    padding: 10px;
     margin: 20px auto;
     background-color: rgb(183, 204, 225);
     border-radius: 5px;
