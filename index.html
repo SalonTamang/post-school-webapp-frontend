@@ -22,6 +22,7 @@
                 <button class="btn active" onclick="filterSelection('all')"> Show all</button>
                 <button class="btn" onclick="filterSelection('nature')"> Title</button>
                 <button class="btn" onclick="filterSelection('cars')"> Price</button>
+                <button class="btn" onclick="filterSelection('cars')"> Gender</button>
                 <button class="btn" onclick="filterSelection('people')"> Ascending</button>
                 <button class="btn" onclick="filterSelection('people')"> Descending</button> 
             </div>
@@ -34,15 +35,46 @@
                 </button>
             </div>
         </div>
-        <main>
+        <div class="container mt-5 mb-5">
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-10">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="images p-3">
+                                    <div class="text-center p-4"> <img id="main-image" style="object-fit: cover;" v-bind:src="product.image" width="350"/> </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="product p-4">
+                                    <div class="mt-4 mb-3">
+                                        <h5 class="text-uppercase" v-html="product.title"></h5>
+                                        <div class="price d-flex flex-row align-items-center"> <p><b><span class="act-price">${{product.price}}</span></b><span style="font-size: 13px;"> [{{product.available}} items]</span></p></div>
+                                    </div>
+                                    <p class="about" v-text="product.description"></p>
+                                <!-- add to cart button -->
+                                    <div class="cart mt-4 align-items-center">
+                                        <button v-on:click="addToCart" v-if="canAddToCart" class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button>
+
+                                        <!-- This button will be displayed otherwise -->
+                                        <button class="btn btn-danger text-uppercase mr-2 px-4" disabled='disabled' v-else>Add to cart</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+        <!-- <main>
             <figure>
                 <img v-bind:src="product.image">
             </figure>
             <h2 v-text="product.title"></h2>
             <p v-html="product.description"></p>
             <p>Price: {{product.price}}</p>
-            <button v-on:click="addToCart">Add to cart</button>
-        </main>
+            <button >Add to cart</button>
+        </main> -->
 
     </div>
     <!-- vue.js script for application -->
@@ -52,17 +84,27 @@
             data:{
                 sitename:"Get School Kits",
                 product: {
-                    id: 1001,
-                    title: "Cat Food, 25lb bag",
-                    description: "A 25 pound bag of irresistible organic goodness for your cat.",
-                    price: 2000,
-                    image: "images/product-fullsize.png"
+                    id: 1,
+                    title: "<b>Maths Set, Geometry Compasses Set 8pcs School Protractor Rulers Set Squares for Maths Learning Home Schooling in Carry Case</b>",
+                    description: "Handy and easy to apply; Helpful tools for drawing circles, Drawing Compass suits for your needs; box of refill, protractor, set squares, eraser and so on, Clear color allows you to see the words, letters, and figures on page through the protractor & Convenient for organized and carry in transparent box.",
+                    price: 20,
+                    image: "images/geometry_box.jpg",
+                    available:10
                 },
                 cart : []
             },
             methods:{
                 addToCart: function(){
-                    this.card.push(this.product.id);
+                    this.cart.push(this.product.id);
+                    this.product.available -= 1; 
+                }
+            },
+            computed:{
+                cartItemCount: function(){
+                    return this.cart.length || "";
+                },
+                canAddToCart: function(){
+                    return this.product.availableInventory > this.cartItemCount;
                 }
             }
         });
