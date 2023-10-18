@@ -27,7 +27,7 @@
                 <button class="btn" onclick="filterSelection('people')"> Descending</button> 
             </div>
             <div id="checkOutContainer">
-                <button class="btn">
+                <button v-on:click="showCheckout" class="btn">
                     <!-- 'cartItemCount' is used the same way as a data property. -->
                     {{ cartItemCount }}
                     <!-- add the cart icon -->
@@ -66,15 +66,6 @@
                 </div>
             </div>
         </div>  
-        <!-- <main>
-            <figure>
-                <img v-bind:src="product.image">
-            </figure>
-            <h2 v-text="product.title"></h2>
-            <p v-html="product.description"></p>
-            <p>Price: {{product.price}}</p>
-            <button >Add to cart</button>
-        </main> -->
 
     </div>
     <!-- vue.js script for application -->
@@ -82,6 +73,7 @@
         var webstore = new Vue({
             el:"#app",
             data:{
+                showProduct:true,
                 sitename:"Get School Kits",
                 product: {
                     id: 1,
@@ -101,11 +93,14 @@
             },
             computed:{
                 cartItemCount: function(){
-                    return this.cart.length || "";
+                    return this.cart.length || "0";
                 },
                 canAddToCart: function(){
-                    return this.product.availableInventory > this.cartItemCount;
-                }
+                    return this.product.available > this.cartItemCount;
+                },
+                showCheckout() {
+                    this.showProduct = this.showProduct ? false : true;
+                },
             }
         });
     </script>
