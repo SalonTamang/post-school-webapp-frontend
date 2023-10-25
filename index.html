@@ -29,9 +29,14 @@
             </div>
             <!-- checkbutton -->
             <div id="checkOutContainer">
-                <button v-on:click="showCheckout" class="btn">
+                <button v-on:click="showCheckout" v-if="showCheckoutButton" class="btn">
                     <!-- 'cartItemCount' is used the same way as a data property. -->
                     {{ cartItemCount }}
+                    <!-- add the cart icon -->
+                    <span class="fas fa-cart-plus"></span> Checkout
+                </button>
+                <button v-else disabled>
+                {{ cartItemCount }}
                     <!-- add the cart icon -->
                     <span class="fas fa-cart-plus"></span> Checkout
                 </button>
@@ -67,9 +72,9 @@
                                     </div>
                                     <p v-text="product.description"></p>
                                     <!-- add to cart button -->
-                                    <div class="cart mt-4 align-items-center">
+                                    <div class="mt-4 align-items-center">
                                         <button v-on:click="addToCart(product)" v-if="canAddToCart(product)" class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button>
-
+                                        <button class="btn btn-secondary" @click="removeFromCart(product)" v-show="showRemoveButton(product)">Remove from cart</button>
                                         <!-- This button will be displayed otherwise -->
                                         <div v-else>
                                             <button class="btn btn-danger text-uppercase mr-2 px-4" disabled>Add to cart</button>
@@ -106,45 +111,49 @@
                         id: 2,
                         title: "<b>Maths Set, Geometry Compasses Set 8pcs School Protractor Rulers Set Squares for Maths Learning Home Schooling in Carry Case</b>",
                         description: "Handy and easy to apply; Helpful tools for drawing circles, Drawing Compass suits for your needs; box of refill, protractor, set squares, eraser and so on, Clear color allows you to see the words, letters, and figures on page through the protractor & Convenient for organized and carry in transparent box.",
-                        price: 20,
+                        price: 30,
                         image: "images/geometry_box.jpg",
-                        available:10
+                        available:7
                     },
                     {
                         id: 3,
                         title: "<b>Maths Set, Geometry Compasses Set 8pcs School Protractor Rulers Set Squares for Maths Learning Home Schooling in Carry Case</b>",
                         description: "Handy and easy to apply; Helpful tools for drawing circles, Drawing Compass suits for your needs; box of refill, protractor, set squares, eraser and so on, Clear color allows you to see the words, letters, and figures on page through the protractor & Convenient for organized and carry in transparent box.",
-                        price: 20,
+                        price: 15,
                         image: "images/geometry_box.jpg",
-                        available:10
+                        available:39
                     },
                     {
                         id: 4,
                         title: "<b>Maths Set, Geometry Compasses Set 8pcs School Protractor Rulers Set Squares for Maths Learning Home Schooling in Carry Case</b>",
                         description: "Handy and easy to apply; Helpful tools for drawing circles, Drawing Compass suits for your needs; box of refill, protractor, set squares, eraser and so on, Clear color allows you to see the words, letters, and figures on page through the protractor & Convenient for organized and carry in transparent box.",
-                        price: 20,
+                        price: 45,
                         image: "images/geometry_box.jpg",
-                        available:10
+                        available:17
                     },
                     {
                         id: 5,
                         title: "<b>Maths Set, Geometry Compasses Set 8pcs School Protractor Rulers Set Squares for Maths Learning Home Schooling in Carry Case</b>",
                         description: "Handy and easy to apply; Helpful tools for drawing circles, Drawing Compass suits for your needs; box of refill, protractor, set squares, eraser and so on, Clear color allows you to see the words, letters, and figures on page through the protractor & Convenient for organized and carry in transparent box.",
-                        price: 20,
+                        price: 53.99,
                         image: "images/geometry_box.jpg",
-                        available:10
+                        available:5
                     },
                     {
                         id: 6,
                         title: "<b>Maths Set, Geometry Compasses Set 8pcs School Protractor Rulers Set Squares for Maths Learning Home Schooling in Carry Case</b>",
                         description: "Handy and easy to apply; Helpful tools for drawing circles, Drawing Compass suits for your needs; box of refill, protractor, set squares, eraser and so on, Clear color allows you to see the words, letters, and figures on page through the protractor & Convenient for organized and carry in transparent box.",
-                        price: 20,
+                        price: 35,
                         image: "images/geometry_box.jpg",
-                        available:10
+                        available:7
                     },
                 ],
                 cart : [],
                 searchQuery: '',
+                sortedProducts:[],
+                sortBy:'default',
+                name:'',
+                phone:'',
             },
             methods:{
                 addToCart: function(product){
@@ -153,6 +162,10 @@
                 },
                 showCheckout() {
                     this.showProduct = this.showProduct ? false : true;
+                },
+                removeFromCart(product){
+                    this.cart.splice(0);
+                    product.available++;
                 },
                 cartCount (id) {
                     let count = 0
@@ -165,13 +178,16 @@
                 },
                 canAddToCart(product) {
                     return product.available > 0;
-                },
+                }
             },
             computed:{
                 cartItemCount: function(){
                     return this.cart.length || "0";
                 },
-                                
+                showCheckoutButton: function(){
+                    return this.cart.length > 0;
+                },
+                               
             }
         });
     </script>
