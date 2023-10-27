@@ -5,7 +5,8 @@ const products = [
         location: "India",
         price: 100,
         image: "images/Math.jpg",
-        available:10
+        available:10,
+        onCart:0
     },
     {
         id: 2,
@@ -13,7 +14,8 @@ const products = [
         location: "Oxford",
         price: 30,
         image: "images/english.jpg",
-        available:7
+        available:7,
+        onCart:0
     },
     {
         id: 3,
@@ -21,7 +23,8 @@ const products = [
         location: "Nepal",
         price: 15,
         image: "images/science.jpg",
-        available:15
+        available:15,
+        onCart:0
     },
     {
         id: 4,
@@ -29,7 +32,8 @@ const products = [
         location: "Spain",
         price: 45,
         image: "images/sport.jpg",
-        available:17
+        available:17,
+        onCart:0
     },
     {
         id: 5,
@@ -37,7 +41,8 @@ const products = [
         location: "London",
         price: 53.99,
         image: "images/music.jpg",
-        available:5
+        available:6,
+        onCart:0
     },
     {
         id: 6,
@@ -45,7 +50,8 @@ const products = [
         location: "China",
         price: 35,
         image: "images/art.jpg",
-        available:7
+        available:7,
+        onCart:0
     },
     {
         id: 7,
@@ -53,7 +59,8 @@ const products = [
         location: "Geda",
         price: 59,
         image: "images/fashion.jpg",
-        available:10
+        available:10,
+        onCart:0
     },
     {
         id: 8,
@@ -61,7 +68,8 @@ const products = [
         location: "China",
         price: 95,
         image: "images/hair.jpg",
-        available:9
+        available:9,
+        onCart:0
     },
     {
         id: 9,
@@ -69,7 +77,8 @@ const products = [
         location: "Canada",
         price: 75,
         image: "images/dance.jpg",
-        available:7
+        available:7,
+        onCart:0
     },
     {
         id: 10,
@@ -77,7 +86,8 @@ const products = [
         location: "Polland",
         price: 65,
         image: "images/drawing.jpg",
-        available:8
+        available:8,
+        onCart:0
     },
     {
         id: 11,
@@ -85,7 +95,8 @@ const products = [
         location: "Hetauda",
         price: 55,
         image: "images/construction.jpg",
-        available:14
+        available:14,
+        onCart:0
     },
     {
         id: 12,
@@ -93,7 +104,8 @@ const products = [
         location: "USA",
         price: 105,
         image: "images/health.jpg",
-        available:20
+        available:20,
+        onCart:0
     },
 ];
 

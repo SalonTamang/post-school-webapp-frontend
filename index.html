@@ -97,10 +97,10 @@
                 </div>
             </div>
         </section>
-        
+        <!-- checkout page -->
         <section class="checkOutPage" v-else>
-            <div class="lessonsContainer">
-                <div class="product" v-for="(product,key) in cart">
+            <div class="payContainer">
+                <div class="checkOurProduct" v-if="showCheckoutItem(product)" v-for="(product,key) in cart">
                     <div class="mb-3 justify-content-center">
                         <div class="w-100 rounded bg-white col-md-10 p-3">
                             <div class="w-100 d-flex justify-content-between col-md-6">
@@ -111,12 +111,12 @@
                                 <div class="p-1">
                                     <div class="mb-3">
                                         <h5 class="text-uppercase" v-html="product.title"></h5>
-                                        <div class="d-flex flex-row align-items-center"> <p><b><span class="act-price">${{product.price}}</span></b><span style="font-size: 13px;"> [{{product.available}} spaces]</span></p></div>
+                                        <div class="d-flex flex-row align-items-center"> <p><b><span class="act-price">${{product.price}}</span></b><span style="font-size: 13px;"> [{{product.onCart}} spaces]</span></p></div>
                                     </div>
                                     <p v-text="product.location"></p>
                                     <!-- remove from cart button -->
                                     <div class="mt-4 align-items-center">
-                                        <button class="btn btn-secondary" @click="removeFromCart(product)" v-show="showRemoveButton">Remove from cart</button>                                                                               
+                                        <button class="btn btn-secondary" @click="removeFromCart(key)" v-show="showRemoveButton">Remove from cart</button>                                                                               
                                     </div>
                                 </div>
                             </div>
@@ -167,40 +167,63 @@
                 phone:0,
             },
             methods:{
-                addToCart: function(product){
-                    this.cart.push(product);
+                addToCart: function(item){
+                    //check if the cart item is same
+                    let cartItem = item.id;
+                    let count = 0;
+                    if(this.cart.length != 0){
+                        this.cart.forEach(element => {
+                            if(cartItem == element.id){
+                                //if match is found only increase the count
+                                //increase oncart items
+                                count += 1;
+                            }     
+                        });
+                        //else push the item to cart and increase its onCart count
+                        if(count == 0){
+                            this.cart.push(item);
+                            item.onCart++;
+                        }
+                    } else{
+                        this.cart.push(item);
+                        item.onCart +=1;
+                    }
+                    item.onCart += count;
                     //decrease product availability
-                    product.available--;
+                    item.available--;
                 },
                 showCheckout() {
                     this.showProduct = this.showProduct ? false : true;
                 },
-                removeFromCart(index){
-                    this.cart.splice(index, 1)
+                removeFromCart(key){
+                    this.cart[key].available++;
+                    this.cart[key].onCart--;
                     // If item being removed is the last item, go back to home which means set showProduct to true
-                    if (this.cart.length === 0) {
-                        this.showProduct = true;
-                    }
-                },
-                cartCount (id) {
-                    let count = 0
-                    for (let i = 0; i < this.cart.length; i++) {
-                        if (this.cart[i] === id) {
-                            count++
+                    if(this.cart[key].onCart == 0){
+                        this.cart.slice(key);
+                        if (this.cart.length === 0) {
+                            this.showProduct = true;
                         }
                     }
-                    return count
+                      
                 },
                 canAddToCart(product) {
                     return product.available > 0;
                 },
                 submitOrder() {
                     alert('Order submitted!')
+                },
+                showCheckoutItem: function(item){
+                    return item.onCart > 0;
                 }
             },
             computed:{
                 cartItemCount: function(){
-                    return this.cart.length || "0";
+                    let count = 0;
+                    this.cart.forEach(element => {
+                        count += element.onCart;
+                    });
+                    return count || "0";
                 },
                 showCheckoutButton: function(){
                     return this.cart.length > 0;
@@ -208,7 +231,6 @@
                 showRemoveButton: function(){
                     return this.cart.length != 0;
                 },
-                
                 userNameValidate () {
                     const nameRegex = /^[a-z A-Z]+$/;
                     return nameRegex.test(this.name);
