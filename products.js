@@ -2,7 +2,7 @@ const products = [
     {
         id: 1,
         title: "<b>Maths</b>",
-        location: "India",
+        location: "Texas",
         price: 100,
         image: "images/Math.jpg",
         available:10,

@@ -61,6 +61,7 @@
             </div>
             <!-- Main page view -->
             <div class="lessonsContainer">
+                <!-- displaying all the list of products loaded from products.js file -->
                 <div class="product" v-for="product in products">
                     <div class="mb-3 justify-content-center">
                         <div class="w-100 rounded bg-white col-md-10 p-3">
@@ -125,25 +126,30 @@
                 </div>
             </div>
             <!-- checkout section -->
-            <h2>Checkout</h2>
-            <form>
-                <label v-bind:class="{ 'error-input': !userNameValidate }" for="name">
-                Name
-                <input type="text" v-model.trim="name" name="name" id="name">
-                <span>
-                    Name must contain only letters
+            <div class="container">
+                <h2>Checkout</h2>
+                <strong>Full Name</strong><br>
+                <!-- show if user input other than string -->
+                <span v-if="!userNameValidate">
+                    Name must contain only letters!<br>
+                </span> 
+                <input type="text" v-model="orderInfo.name" placeholder="Your full name" v-model.trim="name">
+                <br>
+                <strong>Phone Number</strong><br>
+                <span v-if="!phoneNumberValidate">
+                    Phone Number must contain only 10 numbers!<br>
                 </span>
-                </label>
-                <label  v-bind:class="{ 'error-input': !phoneNumberValidate }" for="phone">
-                Phone
-                <input type="number" v-model.number="phone" name="phone" id="phone">
-                <span>
-                    Phone Number must contain only numbers
-                </span>
-                </label>
-                <button v-bind:disabled="!(userNameValidate && phoneNumberValidate)" class="btn btn-secondary" v-on:click="submitOrder">Checkout</button>
-            </form>
-           
+                <input type="text" maxlength="10" v-model="orderInfo.phone" placeholder="Your phone number" v-model.number="phone"><br><br>
+                
+                <button v-bind:disabled="!(userNameValidate && phoneNumberValidate)" class="btn btn-primary mr-1 px-2" v-on:click="submitOrder">Place order</button>
+            </div>
+            <br>
+            <div class="container">
+                <h2>Order Information</h2>
+                <p>Full Name : {{orderInfo.name}}</p>
+                <p>Phone Number : {{orderInfo.phone}}</p>
+            </div>
+             
         </section>
         
     </div>
@@ -159,12 +165,13 @@
                 sitename:"After School",
                 products: products,
                 cart : [],
-                cartItems: [],
                 searchQuery: '',
                 sortedProducts:[],
                 sortBy:'default',
-                name:'',
-                phone:0,
+                orderInfo: {
+                    name:'',
+                    phone:'',
+                }
             },
             methods:{
                 addToCart: function(item){
@@ -200,12 +207,12 @@
                     this.cart[key].onCart--;
                     // If item being removed is the last item, go back to home which means set showProduct to true
                     if(this.cart[key].onCart == 0){
-                        this.cart.slice(key);
-                        if (this.cart.length === 0) {
+                        this.cart.splice(key,1);
+                        //if we have nothing in cart or if cart.length is 0, then move to main page and disable checkout page
+                        if(this.cart.length == 0){
                             this.showProduct = true;
                         }
-                    }
-                      
+                    }                      
                 },
                 canAddToCart(product) {
                     return product.available > 0;
@@ -233,11 +240,12 @@
                 },
                 userNameValidate () {
                     const nameRegex = /^[a-z A-Z]+$/;
-                    return nameRegex.test(this.name);
+                    // .test method checks if the expression matches given string or input
+                    return nameRegex.test(this.orderInfo.name);
                 },
                 phoneNumberValidate () {
-                    const phoneRegex = /^[\d]+$/;
-                    return phoneRegex.test(this.phone);
+                    const phoneRegex = /^[\d]{10}$/;
+                    return phoneRegex.test(this.orderInfo.phone);
                 }               
             }
         });
