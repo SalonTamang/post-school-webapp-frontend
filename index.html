@@ -49,15 +49,15 @@
                 <!-- Sorting -->
                 <b>Sort By</b>
                 <hr>
-                <span class="btn" v-on:click="filterSelection('title')"> Title</span>
-                <span class="btn" v-on:click="filterSelection('location')"> Location</span>
-                <span class="btn" v-on:click="filterSelection('price')"> Price</span>
-                <span class="btn" v-on:click="filterSelection('availability')"> Availability</span>
+                <span class="btn" v-bind:class="sortType=='title'" v-on:click="sortProducts('title')"> Title</span>
+                <span class="btn" v-bind:class="sortType=='location'" v-on:click="sortProducts('location')"> Location</span>
+                <span class="btn" v-bind:class="sortType=='price'" v-on:click="sortProducts('price')"> Price</span>
+                <span class="btn" v-bind:class="sortType=='availability'" v-on:click="sortProducts('availability')"> Availability</span>
                 <br>
                 <b>Order by</b>
                 <hr>
-                <span class="btn" v-on:click="sortSelection('asc')"> Ascending <i class="fa-solid fa-arrow-up"></i></span>
-                <span class="btn" v-on:click="sortSelection('desc')"> Descending <i class="fa-solid fa-arrow-down"></i></span> 
+                <span class="btn" v-bind:disabled="sortingDirection === 'asc'" v-bind:class="sortingDirection === 'asc'" v-on:click="sortSelection('asc')"> Ascending <i class="fa-solid fa-arrow-up"></i></span>
+                <span class="btn" v-bind:disabled="sortingDirection === 'desc'" v-bind:class="sortingDirection === 'asc'" v-on:click="sortSelection('desc')"> Descending <i class="fa-solid fa-arrow-down"></i></span> 
             </div>
             <!-- Main page view -->
             <div class="lessonsContainer">
@@ -133,21 +133,21 @@
                 <span v-if="!userNameValidate">
                     Name must contain only letters!<br>
                 </span> 
-                <input type="text" v-model="orderInfo.name" placeholder="Your full name" v-model.trim="name">
+                <input type="text" v-model="name" placeholder="Your full name" v-model.trim="name">
                 <br>
                 <strong>Phone Number</strong><br>
                 <span v-if="!phoneNumberValidate">
                     Phone Number must contain only 10 numbers!<br>
                 </span>
-                <input type="text" maxlength="10" v-model="orderInfo.phone" placeholder="Your phone number" v-model.number="phone"><br><br>
+                <input type="text" maxlength="10" v-model="phone" placeholder="Your phone number" v-model.number="phone"><br><br>
                 
                 <button v-bind:disabled="!(userNameValidate && phoneNumberValidate)" class="btn btn-primary mr-1 px-2" v-on:click="submitOrder">Place order</button>
             </div>
             <br>
             <div class="container">
                 <h2>Order Information</h2>
-                <p>Full Name : {{orderInfo.name}}</p>
-                <p>Phone Number : {{orderInfo.phone}}</p>
+                <p>Full Name : {{name}}</p>
+                <p>Phone Number : {{phone}}</p>
             </div>
              
         </section>
@@ -163,15 +163,14 @@
             data:{
                 showProduct:true,
                 sitename:"After School",
+                name:'',
+                phone:'',
                 products: products,
                 cart : [],
                 searchQuery: '',
                 sortedProducts:[],
-                sortBy:'default',
-                orderInfo: {
-                    name:'',
-                    phone:'',
-                }
+                sortType:'default',
+                sortingDirection: 'asc',
             },
             methods:{
                 addToCart: function(item){
@@ -222,7 +221,63 @@
                 },
                 showCheckoutItem: function(item){
                     return item.onCart > 0;
-                }
+                },
+
+                sortSelection: function (direction) {
+                    this.sortingDirection = direction;
+                    const products = this.products.slice(0);
+                    this.products = products.reverse();
+                },
+                // sorting function
+                sortProducts: function (sortType) {
+                    this.sortingType = sortType;
+                    this.sortingDirection = 'asc';
+                    let compare = function () {}
+                    switch (sortType) {
+                        // default sorting
+                        case 'default': 
+                            this.products = products;
+                        break;
+                        // sorting using title
+                        case 'title': 
+                        compare = function (a, b) {
+                            if (a.title.toLowerCase() < b.title.toLowerCase()) {
+                                return -1;
+                            } else if (b.title.toLowerCase() < a.title.toLowerCase()) {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                        // sorting using location
+                        case 'location': 
+                        compare = function (a, b) {
+                            if (a.location.toLowerCase() < b.location.toLowerCase()) {
+                                return -1;
+                            } else if (b.location.toLowerCase() < a.location.toLowerCase()) {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                        // sorting using price
+                        case 'price': 
+                        compare = function (a, b) {
+                            return a.price - b.price;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                        // sorting using availability
+                        case 'availability': 
+                        compare = function (a, b) {
+                            return a.available - b.available;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                    }
+                },
             },
             computed:{
                 cartItemCount: function(){
@@ -238,14 +293,14 @@
                 showRemoveButton: function(){
                     return this.cart.length != 0;
                 },
-                userNameValidate () {
+                userNameValidate: function () {
                     const nameRegex = /^[a-z A-Z]+$/;
                     // .test method checks if the expression matches given string or input
-                    return nameRegex.test(this.orderInfo.name);
+                    return nameRegex.test(this.name);
                 },
-                phoneNumberValidate () {
+                phoneNumberValidate: function () {
                     const phoneRegex = /^[\d]{10}$/;
-                    return phoneRegex.test(this.orderInfo.phone);
+                    return phoneRegex.test(this.phone);
                 }               
             }
         });
