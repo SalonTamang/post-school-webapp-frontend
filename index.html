@@ -302,6 +302,7 @@
                 },
                 //searched using title
                 searchProducts: function(){
+                    //convert into lowercase to compare
                     const key = this.searchQuery.toLowerCase();
                     return this.products.filter(item => item.title.toLowerCase().includes(key));
                 }               
