@@ -14,8 +14,10 @@ body{
 }
 .mainContainer{
     width: 100%;
+    height: 500px;
     display:flex;
     margin:20px 0;
+    overflow-y: scroll;
 }
 .sortContainer{
     display: flex;
@@ -89,7 +91,6 @@ button:hover{
     background-image: url('./images/search.png');
     background-repeat: no-repeat;
     text-indent: 20px;
-    background-position: 5% 50%;
-     
-    padding: 12px 20px 12px 40px;   
+    background-position: 3% 50%;
+    padding: 15px 20px 12px 40px;   
 }

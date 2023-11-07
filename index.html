@@ -41,7 +41,7 @@
         </nav>
 
         
-        <section class="mainContainer"  v-if="showProduct">
+        <section class="mainContainer" v-if="showProduct">
             <div class="sortContainer flex-shrink-1 p-4">
                 <!-- Sorting -->
                 <b>Sort By</b>
@@ -56,10 +56,11 @@
                 <span class="btn" v-bind:disabled="sortingDirection === 'asc'" v-bind:class="sortingDirection === 'asc'" v-on:click="sortSelection('asc')"> Ascending <i class="fa-solid fa-arrow-up"></i></span>
                 <span class="btn" v-bind:disabled="sortingDirection === 'desc'" v-bind:class="sortingDirection === 'asc'" v-on:click="sortSelection('desc')"> Descending <i class="fa-solid fa-arrow-down"></i></span> 
             </div>
+            
             <!-- Main page view -->
             <div class="lessonsContainer">
                 <!-- displaying all the list of products loaded from products.js file -->
-                <div class="product" v-for="product in products">
+                <div class="product" v-for="product in searchProducts">
                     <div class="mb-3 justify-content-center">
                         <div class="w-100 rounded bg-white col-md-10 p-3">
                             <!-- product detail container -->
@@ -147,10 +148,8 @@
                 <h2>Order Information</h2>
                 <p>Full Name : {{name}}</p>
                 <p>Phone Number : {{phone}}</p>
-            </div>
-             
-        </section>
-        
+            </div>  
+        </section> 
     </div>
     <!-- vue.js script for application -->
     
@@ -300,6 +299,11 @@
                 phoneNumberValidate: function () {
                     const phoneRegex = /^[\d]{10}$/;
                     return phoneRegex.test(this.phone);
+                },
+                //searched using title
+                searchProducts: function(){
+                    const key = this.searchQuery.toLowerCase();
+                    return this.products.filter(item => item.title.toLowerCase().includes(key));
                 }               
             }
         });
