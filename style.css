@@ -4,17 +4,17 @@
     box-sizing: border-box;
 }
 body{
-    margin: 20px;
+    margin: 10px;
 }
 #app{
     padding: 10px;
-    margin: 20px auto;
+    margin: 10px auto;
     background-color: rgb(245, 240, 240);
     border-radius: 5px;
 }
 .mainContainer{
     width: 100%;
-    height: 500px;
+    height: 550px;
     display:flex;
     margin:20px 0;
     overflow-y: scroll;
