@@ -303,8 +303,13 @@
                 //searched using title
                 searchProducts: function(){
                     //convert into lowercase to compare
-                    const key = this.searchQuery.toLowerCase();
-                    return this.products.filter(item => item.title.toLowerCase().includes(key));
+                    const key = this.searchQuery.toLowerCase().trim();
+                    if(this.searchQuery == ""){
+                        return this.products;
+                    } else {
+                        return this.products.filter(item => 
+                            item.title.toLowerCase().includes(key) ||  item.location.toLowerCase().includes(key));
+                    }
                 }               
             }
         });
