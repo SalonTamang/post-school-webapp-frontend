@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coursework1 | Web Development with Vue.js</title>
+    <!-- adding bootstrap for design -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <!-- adding vue.js script to page -->
+    <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
+    <!-- adding font awesome for icons -->
+    <script src="https://kit.fontawesome.com/c8521bd5d1.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div id="app">
+        <nav class="toolbar-container">
+            <center><h1 style="font-size: 2rem;" v-text="sitename"></h1></center>
+            <!-- search bar -->
+            <div>
+                <label for="search">
+                    <input id="search" class="bg-white rounded border-0 p-2" type="search" v-model="searchQuery" placeholder='Search...'>
+                </label>
+            </div>
+            <!-- checkbutton -->
+            <div id="checkOutContainer">
+                <button v-on:click="showCheckout" v-if="showCheckoutButton" class="btn">
+                    <!-- 'cartItemCount' is used the same way as a data property. -->
+                    {{ cartItemCount }}
+                    <!-- add the cart icon -->
+                    <span class="fas fa-cart-plus"></span> Checkout
+                </button>
+                <button v-else disabled>
+                {{ cartItemCount }}
+                    <!-- add the cart icon -->
+                    <span class="fas fa-cart-plus"></span> Checkout
+                </button>
+            </div>
+        </nav>
+
+        
+        <section class="mainContainer" v-if="showProduct">
+            <div class="sortContainer flex-shrink-1 p-4">
+                <!-- Sorting -->
+                <b>Sort By</b>
+                <hr>
+                <span class="btn" v-bind:class="sortType=='title'" v-on:click="sortProducts('title')"> Title</span>
+                <span class="btn" v-bind:class="sortType=='location'" v-on:click="sortProducts('location')"> Location</span>
+                <span class="btn" v-bind:class="sortType=='price'" v-on:click="sortProducts('price')"> Price</span>
+                <span class="btn" v-bind:class="sortType=='availability'" v-on:click="sortProducts('availability')"> Availability</span>
+                <br>
+                <b>Order by</b>
+                <hr>
+                <span class="btn" v-bind:disabled="sortingDirection === 'asc'" v-bind:class="sortingDirection === 'asc'" v-on:click="sortSelection('asc')"> Ascending <i class="fa-solid fa-arrow-up"></i></span>
+                <span class="btn" v-bind:disabled="sortingDirection === 'desc'" v-bind:class="sortingDirection === 'asc'" v-on:click="sortSelection('desc')"> Descending <i class="fa-solid fa-arrow-down"></i></span> 
+            </div>
+            
+            <!-- Main page view -->
+            <div class="lessonsContainer">
+                <!-- displaying all the list of products loaded from products.js file -->
+                <div class="product" v-for="product in searchProducts">
+                    <div class="mb-3 justify-content-center">
+                        <div class="w-100 rounded bg-white col-md-10 p-3">
+                            <!-- product detail container -->
+                            <div class="w-100 d-flex flex-column justify-content-between col-md-6">
+                                <div class="images">
+                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://localhost:4000/' + product.image" height="200px" width="250"/> </div>
+                                </div>
+                        
+                                <div class="p-1 d-flex flex-column justify-content-center align-items-center" >
+                                    <div class="mb-0">
+                                        <h5 class="text-uppercase" v-html="product.title"></h5>
+
+                                        <div class="d-flex flex-row align-items-center"> <p><b><span class="act-price">${{product.price}}</span></b><span style="font-size: 13px;"> [{{product.available}} spaces]</span></p></div>
+                                    </div>
+                                    <p v-text="product.location"></p>
+                                    <!-- add to cart button -->
+                                    <div class="mt-1 align-items-center">
+                                        <button v-on:click="addToCart(product)" v-if="canAddToCart(product)" class="btn btn-primary text-uppercase button">Add to cart</button>
+                                        <!-- This button will be displayed otherwise -->
+                                        <span v-if="product.available >= 2">    
+                                            Buy now!
+                                        </span>
+                                        <span v-else-if="product.available === 1" style="color: red;">
+                                            Only 1 space left!
+                                        </span>
+                                        <div v-else>
+                                            <button class="btn btn-primary text-uppercase button" disabled>Add to cart</button>
+                                            <span style="color: rosybrown;">No more spaces </span>
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- checkout page -->
+        <section class="checkOutPage" v-else>
+            <div class="payContainer">
+                <div class="checkOurProduct" v-if="showCheckoutItem(product)" v-for="(product,key) in cart">
+                    <div class="mb-3 justify-content-center">
+                        <div class="w-100 rounded bg-white col-md-10 p-3">
+                            <div class="w-100 d-flex justify-content-between col-md-6">
+                                <div class="images">
+                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://localhost:4000/' + product.image" height="300" width="250"/> </div>
+                                </div>
+                        
+                                <div class="p-1">
+                                    <div class="mb-3">
+                                        <h5 class="text-uppercase" v-html="product.title"></h5>
+                                        <div class="d-flex flex-row align-items-center"> <p><b><span class="act-price">${{product.price}}</span></b><span style="font-size: 13px;"> [{{product.onCart}} spaces]</span></p></div>
+                                    </div>
+                                    <p v-text="product.location"></p>
+                                    <!-- remove from cart button -->
+                                    <div class="mt-4 align-items-center">
+                                        <button class="btn btn-secondary" @click="removeFromCart(key)" v-show="showRemoveButton">Remove from cart</button>                                                                               
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- checkout section -->
+            <div class="container">
+                <h2>Checkout</h2>
+                <strong>Full Name</strong><br>
+                <!-- show if user input other than string -->
+                <span v-if="!userNameValidate">
+                    Name must contain only letters!<br>
+                </span> 
+                <input type="text" v-model="name" placeholder="Your full name" v-model.trim="name">
+                <br>
+                <strong>Phone Number</strong><br>
+                <span v-if="!phoneNumberValidate">
+                    Phone Number must contain only 10 numbers!<br>
+                </span>
+                <input type="text" maxlength="10" v-model="phone" placeholder="Your phone number" v-model.number="phone"><br><br>
+                
+                <button v-bind:disabled="!(userNameValidate && phoneNumberValidate)" class="btn btn-primary mr-1 px-2" v-on:click="submitOrder">Place order</button>
+            </div>
+            <br>
+            <div class="container">
+                <h2>Order Information</h2>
+                <p>Full Name : {{name}}</p>
+                <p>Phone Number : {{phone}}</p>
+            </div>  
+        </section> 
+    </div>
+    <!-- vue.js script for application -->
+    
+    <script type="module">
+
+        var webstore = new Vue({
+            el:"#app",
+            data:{
+                showProduct:true,
+                sitename:"After School",
+                name:'',
+                phone:'',
+                products: [],
+                cart : [],
+                searchQuery: '',
+                sortedProducts:[],
+                sortType:'default',
+                sortingDirection: 'asc',
+                order: {}
+            },
+            methods:{
+                addToCart: function(item){
+                    //check if the cart item is same
+                    let cartItem = item.id;
+                    let count = 0;
+                    if(this.cart.length != 0){
+                        this.cart.forEach(element => {
+                            if(cartItem == element.id){
+                                //if match is found only increase the count
+                                //increase oncart items
+                                count += 1;
+                            }     
+                        });
+                        //else push the item to cart and increase its onCart count
+                        if(count == 0){
+                            this.cart.push(item);
+                            item.onCart++;
+                        }
+                    } else{
+                        this.cart.push(item);
+                        item.onCart +=1;
+                    }
+                    item.onCart += count;
+                    //decrease product availability
+                    item.available--;
+                },
+                showCheckout() {
+                    this.showProduct = this.showProduct ? false : true;
+                },
+                removeFromCart(key){
+                    this.cart[key].available++;
+                    this.cart[key].onCart--;
+                    // If item being removed is the last item, go back to home which means set showProduct to true
+                    if(this.cart[key].onCart == 0){
+                        this.cart.splice(key,1);
+                        //if we have nothing in cart or if cart.length is 0, then move to main page and disable checkout page
+                        if(this.cart.length == 0){
+                            this.showProduct = true;
+                        }
+                    }                      
+                },
+                canAddToCart(product) {
+                    return product.available > 0;
+                },
+                submitOrder() {
+                    alert('Order submitted!')
+                },
+                showCheckoutItem: function(item){
+                    return item.onCart > 0;
+                },
+                //select the sorting direction
+                sortSelection: function (direction) {
+                    this.sortingDirection = direction;
+                    const products = this.products.slice(0);
+                    this.products = products.reverse();
+                },
+                // sorting function
+                sortProducts: function (sortType) {
+                    this.sortingType = sortType;
+                    this.sortingDirection = 'asc';
+                    let compare = function () {}
+                    switch (sortType) {
+                        // default sorting
+                        case 'default': 
+                            this.products = products;
+                        break;
+                        // sorting using title
+                        case 'title': 
+                        compare = function (a, b) {
+                            if (a.title.toLowerCase() < b.title.toLowerCase()) {
+                                return -1;
+                            } else if (b.title.toLowerCase() < a.title.toLowerCase()) {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                        // sorting using location
+                        case 'location': 
+                        compare = function (a, b) {
+                            if (a.location.toLowerCase() < b.location.toLowerCase()) {
+                                return -1;
+                            } else if (b.location.toLowerCase() < a.location.toLowerCase()) {
+                                return 1;
+                            }
+                            return 0;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                        // sorting using price
+                        case 'price': 
+                        compare = function (a, b) {
+                            return a.price - b.price;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                        // sorting using availability
+                        case 'availability': 
+                        compare = function (a, b) {
+                            return a.available - b.available;
+                        }
+                        this.products = products.sort(compare);
+                        break;
+                    }
+                },
+                submitOrder: function() {
+                    fetch('http://localhost:4000/collections/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.order)
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log('Order submitted:', data))
+                    .catch(err => console.error('Error:', err));
+                }
+            },
+            computed:{
+                cartItemCount: function(){
+                    let count = 0;
+                    this.cart.forEach(element => {
+                        count += element.onCart;
+                    });
+                    return count || "0";
+                },
+                showCheckoutButton: function(){
+                    return this.cart.length > 0;
+                },
+                showRemoveButton: function(){
+                    return this.cart.length != 0;
+                },
+                userNameValidate: function () {
+                    const nameRegex = /^[a-z A-Z]+$/;
+                    // .test method checks if the expression matches given string or input
+                    return nameRegex.test(this.name);
+                },
+                phoneNumberValidate: function () {
+                    const phoneRegex = /^[\d]{10}$/;
+                    return phoneRegex.test(this.phone);
+                },
+                //searched using title and location
+                searchProducts: function(){
+                    //convert into lowercase to compare
+                    const key = this.searchQuery.toLowerCase().trim();
+                    if(this.searchQuery == ""){
+                        return this.products;
+                    } else {
+                        return this.products.filter(item => 
+                            item.title.toLowerCase().includes(key) ||  item.location.toLowerCase().includes(key));
+                    }
+                }               
+            },
+            created: function() {
+                    fetch('http://localhost:4000/collections/lessons')
+                        .then(response => response.json())
+                        .then(data => this.products = data)
+                        .catch(err => console.error('Error:', err));
+                },
+            });
+    </script>
+</body>
+</html>
