@@ -21,7 +21,7 @@
             <!-- search bar -->
             <div>
                 <label for="search">
-                    <input id="search" class="bg-white rounded border-0 p-2" type="search" v-model="searchQuery" placeholder='Search...'>
+                    <input id="search" class="bg-white rounded border-0 p-2" type="text" v-model="searchQuery" @input="searchProducts" placeholder='Search...'>
                 </label>
             </div>
             <!-- checkbutton -->
@@ -60,13 +60,13 @@
             <!-- Main page view -->
             <div class="lessonsContainer">
                 <!-- displaying all the list of products loaded from products.js file -->
-                <div class="product" v-for="product in searchProducts">
+                <div class="product" v-for="product in products">
                     <div class="mb-3 justify-content-center">
                         <div class="w-100 rounded bg-white col-md-10 p-3">
                             <!-- product detail container -->
                             <div class="w-100 d-flex flex-column justify-content-between col-md-6">
                                 <div class="images">
-                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://localhost:4000/' + product.image" height="200px" width="250"/> </div>
+                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/' + product.image" height="200px" width="250"/> </div>
                                 </div>
                         
                                 <div class="p-1 d-flex flex-column justify-content-center align-items-center" >
@@ -106,7 +106,7 @@
                         <div class="w-100 rounded bg-white col-md-10 p-3">
                             <div class="w-100 d-flex justify-content-between col-md-6">
                                 <div class="images">
-                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://localhost:4000/' + product.image" height="300" width="250"/> </div>
+                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/' + product.image" height="300" width="250"/> </div>
                                 </div>
                         
                                 <div class="p-1">
@@ -133,21 +133,20 @@
                 <span v-if="!userNameValidate">
                     Name must contain only letters!<br>
                 </span> 
-                <input type="text" v-model="name" placeholder="Your full name" v-model.trim="name">
+                <input type="text" v-model="order.name" placeholder="Your full name" v-model.trim="order.name">
                 <br>
                 <strong>Phone Number</strong><br>
                 <span v-if="!phoneNumberValidate">
                     Phone Number must contain only 10 numbers!<br>
                 </span>
-                <input type="text" maxlength="10" v-model="phone" placeholder="Your phone number" v-model.number="phone"><br><br>
-                
+                <input type="text" maxlength="10" v-model="order.phone" placeholder="Your phone number" v-model.number="order.phone"><br><br> 
                 <button v-bind:disabled="!(userNameValidate && phoneNumberValidate)" class="btn btn-primary mr-1 px-2" v-on:click="submitOrder">Place order</button>
             </div>
             <br>
             <div class="container">
                 <h2>Order Information</h2>
-                <p>Full Name : {{name}}</p>
-                <p>Phone Number : {{phone}}</p>
+                <p>Full Name : {{order.name}}</p>
+                <p>Phone Number : {{order.phone}}</p>
             </div>  
         </section> 
     </div>
@@ -160,15 +159,18 @@
             data:{
                 showProduct:true,
                 sitename:"After School",
-                name:'',
-                phone:'',
                 products: [],
                 cart : [],
                 searchQuery: '',
                 sortedProducts:[],
                 sortType:'default',
                 sortingDirection: 'asc',
-                order: {}
+                order: {
+                    name: '',
+                    phone: '',
+                    id:[],
+                    spaces:[]
+                },
             },
             methods:{
                 addToCart: function(item){
@@ -213,9 +215,6 @@
                 },
                 canAddToCart(product) {
                     return product.available > 0;
-                },
-                submitOrder() {
-                    alert('Order submitted!')
                 },
                 showCheckoutItem: function(item){
                     return item.onCart > 0;
@@ -277,18 +276,60 @@
                     }
                 },
                 submitOrder: function() {
-                    fetch('http://localhost:4000/collections/orders', {
-                        method: 'POST',
+                    this.order.id = this.cart.map(item => item.id);
+                    this.order.spaces = this.cart.map(item => item.onCart);
+                    fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/orders', {
+                        method: 'POST', 
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(this.order)
                     })
                     .then(response => response.json())
-                    .then(data => console.log('Order submitted:', data))
-                    .catch(err => console.error('Error:', err));
-                }
-            },
+                    .then(data => {
+                        console.log('Order submitted:', data);
+                        return fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ id: this.order.id, spaces: this.order.spaces })
+                        });
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.products = data;
+                        if (window.confirm('Order submitted successfully!')) {
+                            if (window.confirm('Continue shopping, have a nice day! :).')) {
+                                location.reload();
+                            }
+                        } 
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        window.alert('Error submitting order.');
+                    });
+                },
+                searchProducts() {
+                    const key = this.searchQuery.toLowerCase().trim();
+                    if (key == "") {
+                        // Fetch all products when the search query is empty
+                        fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons')
+                            .then(response => response.json())
+                            .then(data => this.products = data)
+                            .catch(err => console.error('Error:', err));
+                        return this.products;
+                    } else {
+                        // Send the search query to the server
+                        fetch(`http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/lessons/search?q=${key}`)
+                        .then(response => response.json())
+                        .then(data => this.products = data)
+                        .catch(err => console.error('Error:', err));
+                        return this.products;
+                    }
+                } 
+                
+            },  
             computed:{
                 cartItemCount: function(){
                     let count = 0;
@@ -306,31 +347,21 @@
                 userNameValidate: function () {
                     const nameRegex = /^[a-z A-Z]+$/;
                     // .test method checks if the expression matches given string or input
-                    return nameRegex.test(this.name);
+                    return nameRegex.test(this.order.name);
                 },
                 phoneNumberValidate: function () {
                     const phoneRegex = /^[\d]{10}$/;
-                    return phoneRegex.test(this.phone);
-                },
-                //searched using title and location
-                searchProducts: function(){
-                    //convert into lowercase to compare
-                    const key = this.searchQuery.toLowerCase().trim();
-                    if(this.searchQuery == ""){
-                        return this.products;
-                    } else {
-                        return this.products.filter(item => 
-                            item.title.toLowerCase().includes(key) ||  item.location.toLowerCase().includes(key));
-                    }
-                }               
+                    return phoneRegex.test(this.order.phone);
+                }, 
+                            
             },
-            created: function() {
-                    fetch('http://localhost:4000/collections/lessons')
-                        .then(response => response.json())
-                        .then(data => this.products = data)
-                        .catch(err => console.error('Error:', err));
-                },
-            });
+            created: function(){
+                fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons')
+                .then(response => response.json())
+                .then(data => this.products = data)
+                .catch(err => console.error('Error:', err));
+            },
+        });
     </script>
 </body>
 </html>
