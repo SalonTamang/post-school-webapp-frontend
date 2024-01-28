@@ -66,7 +66,7 @@
                             <!-- product detail container -->
                             <div class="w-100 d-flex flex-column justify-content-between col-md-6">
                                 <div class="images">
-                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/' + product.image" height="200px" width="250"/> </div>
+                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/' + product.image" height="200px" width="250"/> </div>
                                 </div>
                         
                                 <div class="p-1 d-flex flex-column justify-content-center align-items-center" >
@@ -106,7 +106,7 @@
                         <div class="w-100 rounded bg-white col-md-10 p-3">
                             <div class="w-100 d-flex justify-content-between col-md-6">
                                 <div class="images">
-                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/' + product.image" height="300" width="250"/> </div>
+                                    <div class="text-center p-2"> <img id="main-image" style="object-fit: contain;" v-bind:src="'https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/' + product.image" height="300" width="250"/> </div>
                                 </div>
                         
                                 <div class="p-1">
@@ -278,7 +278,7 @@
                 submitOrder: function() {
                     this.order.id = this.cart.map(item => item.id);
                     this.order.spaces = this.cart.map(item => item.onCart);
-                    fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/orders', {
+                    fetch('https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/orders', {
                         method: 'POST', 
                         headers: {
                             'Content-Type': 'application/json'
@@ -288,7 +288,7 @@
                     .then(response => response.json())
                     .then(data => {
                         console.log('Order submitted:', data);
-                        return fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons', {
+                        return fetch('https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons', {
                             method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -314,14 +314,14 @@
                     const key = this.searchQuery.toLowerCase().trim();
                     if (key == "") {
                         // Fetch all products when the search query is empty
-                        fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons')
+                        fetch('https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons')
                             .then(response => response.json())
                             .then(data => this.products = data)
                             .catch(err => console.error('Error:', err));
                         return this.products;
                     } else {
                         // Send the search query to the server
-                        fetch(`http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/lessons/search?q=${key}`)
+                        fetch(`https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/lessons/search?q=${key}`)
                         .then(response => response.json())
                         .then(data => this.products = data)
                         .catch(err => console.error('Error:', err));
@@ -356,7 +356,7 @@
                             
             },
             created: function(){
-                fetch('http://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons')
+                fetch('https://post-school-env.eba-vxtxxfj2.eu-west-2.elasticbeanstalk.com/collections/lessons')
                 .then(response => response.json())
                 .then(data => this.products = data)
                 .catch(err => console.error('Error:', err));
